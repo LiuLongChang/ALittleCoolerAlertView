@@ -383,66 +383,68 @@ class AlertView: UIView,CAAnimationDelegate {
 
 
 
-//    func transitionInCompletion(completion:@escaping ((Void)->Void)){
-//
-//
-//        switch self.transitionStyle.rawValue {
-//        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
-//
-//            var rect = self.containerView.frame;
-//            let originRect = rect
-//            rect.origin.y = bounds.size.height
-//            self.containerView.frame = rect
-//            UIView.animate(withDuration: 0.3, animations: {
-//
-//                self.containerView.frame = originRect
-//
-//                }, completion: { (finish) in
-//
-//                        completion()
-//
-//            })
-//
-//
-//            break
-//
-//        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
-//
-//
-//            var rect = self.containerView.frame
-//            let originalRect = rect
-//            rect.origin.y = -rect.size.height
-//            self.containerView.frame = rect
-//            UIView.animate(withDuration: 0.3, animations: {
-//
-//                self.containerView.frame = originalRect
-//
-//                }, completion: { (finish) in
-//
-//                    completion()
-//
-//            })
-//            
-//            break
-//
-//        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
-//
-//            let animation = CAKeyframeAnimation.init(keyPath: "transform.scale")
-//            animation.values = [0.01,1.2,0.9,1]
-//            animation.keyTimes = [0,0.4,0.6,1]
-//            animation.timingFunctions = [CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut)]
-//            animation.duration = 0.5
-//            animation.delegate = self
-//            animation.setValue(completion, forKey: "handler")
-//            self.containerView.layer.add(animation, forKey: "bouce")
-//            break
-//
-//        default:
-//
-//            break
-//        }
-//
-//    }
+    func transitionInCompletion(completion:@escaping ((Void)->Void)){
+
+
+        switch self.transitionStyle.rawValue {
+        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+
+            var rect = self.containerView.frame;
+            let originRect = rect
+            rect.origin.y = bounds.size.height
+            self.containerView.frame = rect
+            UIView.animate(withDuration: 0.3, animations: {
+
+                self.containerView.frame = originRect
+
+                }, completion: { (finish) in
+
+                        completion()
+
+            })
+
+
+            break
+
+        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+
+
+            var rect = self.containerView.frame
+            let originalRect = rect
+            rect.origin.y = -rect.size.height
+            self.containerView.frame = rect
+            UIView.animate(withDuration: 0.3, animations: {
+
+                self.containerView.frame = originalRect
+
+                }, completion: { (finish) in
+
+                    completion()
+                    
+            })
+            
+            break
+
+        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+
+            let animation = CAKeyframeAnimation.init(keyPath: "transform.scale")
+            animation.values = [0.01,1.2,0.9,1]
+            animation.keyTimes = [0,0.4,0.6,1]
+            animation.timingFunctions = [CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut)]
+            animation.duration = 0.5
+            animation.delegate = self
+            animation.setValue(completion as Any, forKey: "handler")
+            self.containerView.layer.add(animation, forKey: "bouce")
+            break
+
+            //15   22  23  25 26 27  21     15  21  23  25  22  17
+            
+        default:
+
+            break
+        }
+
+    }
 
 
 
