@@ -71,16 +71,6 @@ enum CustomAlertView_TransitionStyle:NSInteger{
 typealias AlertViewHandler = (_ alertView:AlertView)->Void
 
 
-//
-//
-class Alert: NSObject {
-
-    override init() {
-        super.init()
-    }
-    
-}
-
 
 class CustomAlertItem: NSObject {
 
@@ -93,7 +83,6 @@ class CustomAlertItem: NSObject {
     }
 
 }
-
 /*
  *
  *
@@ -114,15 +103,11 @@ class CustomAlertVC: UIViewController {
     }
 
 }
-//
-//
-//
-//
-
-
-
-
-
+/*
+ *
+ *
+ *
+ */
 class AlertView: UIView,CAAnimationDelegate {
 
     var title : String! = ""
@@ -139,7 +124,7 @@ class AlertView: UIView,CAAnimationDelegate {
     var titleFOnt : UIFont! = nil
     var messageFont : UIFont! = nil
     var buttonFont : UIFont! = nil
-    var cornerRadius : CGFloat! = nil
+    var cornerRadius : CGFloat! = 0
     var shadowRadius : CGFloat! = nil
 
 
@@ -156,36 +141,55 @@ class AlertView: UIView,CAAnimationDelegate {
     var layoutDirty : Bool! = false
 
 
-    convenience init() {
+
+
+    convenience init(){
         self.init(title:"",message:"")
+
+
     }
 
 
 
-    convenience init(title:String,message:String){
-        self.init()
+    init(title:String,message:String){
+        super.init(frame: CGRect.zero)
         self.title = title
         if (title as NSString).length == 0 {
             self.title = ""
         }
-
         self.message = message
         if (message as NSString).length == 0 {
             self.message = ""
         }
-
         transitionStyle = .Bounce
     }
-    
+
+
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+
+
+
+//    init(customView:UIView) {
+//        self.customView = customView
+//        self.transitionStyle = .Bounce
+//    }
+
+
 
     convenience init(customView:UIView) {
         self.init()
         self.customView = customView
         self.transitionStyle = .Bounce
     }
+
+
+//    init(customView:UIView,style:CustomAlertView_TransitionStyle) {
+//        self.transitionStyle = style
+//    }
 
     convenience init(customView:UIView,style:CustomAlertView_TransitionStyle) {
         self.init(customView:customView)
@@ -201,7 +205,7 @@ class AlertView: UIView,CAAnimationDelegate {
         }
         return _custom_alert_queue
     }
-    class func currentAlertView()->AlertView{
+    class func currentAlertView()->AlertView?{
         return _custom_alert_current_view
     }
     class func setCurrentAlertView(alertView:AlertView?){
@@ -274,7 +278,7 @@ class AlertView: UIView,CAAnimationDelegate {
 
     func show(){
 
-        if AlertView.sharedQueue().contains(self) {
+        if AlertView.sharedQueue().contains(self) == false {
             AlertView.sharedQueue().add(self)
         }
 
@@ -282,9 +286,9 @@ class AlertView: UIView,CAAnimationDelegate {
             return
         }
 
-        if AlertView.currentAlertView().visible == true {
+        if AlertView.currentAlertView()?.visible == true {
             let alert = AlertView.currentAlertView()
-            alert.dismissAnimate(animated: true, cleanUp: false)
+            alert?.dismissAnimate(animated: true, cleanUp: false)
         }
 
         self.visible = true
@@ -309,12 +313,12 @@ class AlertView: UIView,CAAnimationDelegate {
         self.validateLayout()
 
 
-//        self.transitionInCompletion { () in
-//            let index = AlertView.sharedQueue().index(of: self)
-//            if index < (AlertView.sharedQueue().count - 1) {
-//                self.dismissAnimate(animated: true, cleanUp: false)
-//            }
-//        }
+        self.transitionInCompletion { () in
+            let index = AlertView.sharedQueue().index(of: self)
+            if index < (AlertView.sharedQueue().count - 1) {
+                self.dismissAnimate(animated: true, cleanUp: false)
+            }
+        }
 
     }
 
@@ -325,6 +329,7 @@ class AlertView: UIView,CAAnimationDelegate {
 
 
     func dismissAnimate(animated:Bool,cleanUp:Bool){
+
 
         let isVisible = self.visible
         let dismissComplete : ((Void)->Void) = { () in
@@ -363,7 +368,12 @@ class AlertView: UIView,CAAnimationDelegate {
 
         if (animated == true) && (isVisible == true) {
 
-            //self.transitionOutCompletion(completion: dismissComplete)
+            self.transitionOutCompletion(completion: dismissComplete)
+
+
+
+
+
             if AlertView.sharedQueue().count == 1 {
                 AlertView.hideBgAnimated(animated: true)
             }
@@ -379,12 +389,7 @@ class AlertView: UIView,CAAnimationDelegate {
 
     }
 
-
-
-
-
     func transitionInCompletion(completion:@escaping ((Void)->Void)){
-
 
         switch self.transitionStyle.rawValue {
         case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
@@ -403,10 +408,9 @@ class AlertView: UIView,CAAnimationDelegate {
 
             })
 
-
             break
 
-        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+        case CustomAlertView_TransitionStyle.SlideFromTop.rawValue:
 
 
             var rect = self.containerView.frame
@@ -425,7 +429,7 @@ class AlertView: UIView,CAAnimationDelegate {
             
             break
 
-        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+        case CustomAlertView_TransitionStyle.Bounce.rawValue:
 
             let animation = CAKeyframeAnimation.init(keyPath: "transform.scale")
             animation.values = [0.01,1.2,0.9,1]
@@ -449,62 +453,62 @@ class AlertView: UIView,CAAnimationDelegate {
 
 
 
-//    func transitionOutCompletion(completion:@escaping (Void)->Void){
-//
-//
-//        switch self.transitionStyle.rawValue {
-//        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
-//
-//            var rect = self.containerView.frame
-//            rect.origin.y = self.bounds.size.height
-//            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn,.curveEaseOut,.curveEaseInOut], animations: {
-//
-//                self.containerView.frame = rect
-//
-//                }, completion: { (finish) in
-//
-//                    completion()
-//
-//            })
-//
-//            break
-//
-//        case CustomAlertView_TransitionStyle.SlideFromTop.rawValue:
-//
-//            var rect = self.containerView.frame
-//            rect.origin.y = -rect.size.height
-//            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn], animations: {
-//
-//                self.containerView.frame = rect
-//
-//                }, completion: { (finish) in
-//
-//                    completion()
-//
-//            })
-//
-//            break
-//
-//        case CustomAlertView_TransitionStyle.Bounce.rawValue:
-//
-//            let animation = CAKeyframeAnimation.init(keyPath: "transform.scale")
-//            animation.values = [1,1.2,0.01]
-//            animation.keyTimes = [0,0.4,1]
-//            animation.timingFunctions = [CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseOut)]
-//            animation.duration = 0.35
-//            animation.delegate = self
-//            animation.setValue(completion, forKey: "handler")
-//            self.containerView.layer.add(animation, forKey: "bounce")
-//            self.containerView.transform = CGAffineTransform.init(scaleX: 0.01, y: 0.01)
-//
-//            break
-//
-//        default: break
-//
-//
-//        }
-//
-//    }
+    func transitionOutCompletion(completion:@escaping (Void)->Void){
+
+
+        switch self.transitionStyle.rawValue {
+        case CustomAlertView_TransitionStyle.SlideFromBottom.rawValue:
+
+            var rect = self.containerView.frame
+            rect.origin.y = self.bounds.size.height
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn,.curveEaseOut,.curveEaseInOut], animations: {
+
+                self.containerView.frame = rect
+
+                }, completion: { (finish) in
+
+                    completion()
+
+            })
+
+            break
+
+        case CustomAlertView_TransitionStyle.SlideFromTop.rawValue:
+
+            var rect = self.containerView.frame
+            rect.origin.y = -rect.size.height
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn], animations: {
+
+                self.containerView.frame = rect
+
+                }, completion: { (finish) in
+
+                    completion()
+
+            })
+
+            break
+
+        case CustomAlertView_TransitionStyle.Bounce.rawValue:
+
+            let animation = CAKeyframeAnimation.init(keyPath: "transform.scale")
+            animation.values = [1,1.2,0.01]
+            animation.keyTimes = [0,0.4,1]
+            animation.timingFunctions = [CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseInEaseOut),CAMediaTimingFunction.init(name: kCAMediaTimingFunctionEaseOut)]
+            animation.duration = 0.35
+            animation.delegate = self
+            animation.setValue(completion as Any, forKey: "handler")
+            self.containerView.layer.add(animation, forKey: "bounce")
+            self.containerView.transform = CGAffineTransform.init(scaleX: 0.01, y: 0.01)
+
+            break
+
+        default: break
+
+
+        }
+
+    }
 
 
     func resetTransition(){
@@ -527,23 +531,18 @@ class AlertView: UIView,CAAnimationDelegate {
 
     func validateLayout(){
 
-
         if (self.layoutDirty == false) {
             return
         }
         self.layoutDirty = false
 
-
-
         let height = self.preferredHeight()
-        let left = bounds.size.width - Alert_View_Container_Width * 0.5
+        let left = (bounds.size.width - Alert_View_Container_Width) * 0.5
         let top = (bounds.size.height - height) * 0.5
         self.containerView.transform = CGAffineTransform.identity
         self.containerView.frame = CGRect.init(x: left, y: top, width: Alert_View_Container_Width, height: height)
         self.containerView.layer.cornerRadius = 6.0
         self.containerView.layer.shadowPath = UIBezierPath.init(roundedRect: self.containerView.bounds, cornerRadius: self.containerView.layer.cornerRadius).cgPath
-
-
 
         var y = Alert_View_Content_Padding_Top
         if self.titleLabel != nil {
@@ -552,8 +551,6 @@ class AlertView: UIView,CAAnimationDelegate {
             self.titleLabel.frame = CGRect.init(x: Alert_View_Content_Padding_Left, y: y, width: self.containerView.bounds.size.width - Alert_View_Content_Padding_Left * 2, height: height)
             y += height
         }
-
-
 
         if self.messageLabel != nil {
             if y > Alert_View_Content_Padding_Top {
@@ -600,10 +597,12 @@ class AlertView: UIView,CAAnimationDelegate {
             if self.items.count == 2 {
 
                 let width = (self.containerView.bounds.size.width - CGFloat(Alert_View_Button_Padding_Left) * CGFloat(2)) * CGFloat(0.5)
+
                 var btn = self.buttons[0] as! UIButton
-                btn.frame = CGRect.init(x: CGFloat(Alert_View_Button_Padding_Left), y: width, width: width, height: CGFloat(Alert_View_Button_Height))
+                btn.frame = CGRect.init(x: CGFloat(Alert_View_Button_Padding_Left), y: y, width: width, height: CGFloat(Alert_View_Button_Height))
+
                 btn = self.buttons[1] as! UIButton
-                btn.frame = CGRect.init(x: CGFloat(Alert_View_Button_Padding_Left) + width, y: CGFloat(y), width: CGFloat(lineHeight), height: CGFloat(Alert_View_Button_Height))
+                btn.frame = CGRect.init(x: CGFloat(Alert_View_Button_Padding_Left) + width, y: CGFloat(y), width: CGFloat(width), height: CGFloat(Alert_View_Button_Height))
 
                 self.lineBtnLabel.backgroundColor = UIColor.lightGray
                 let lineHeight = 1.0
@@ -863,7 +862,6 @@ class AlertView: UIView,CAAnimationDelegate {
         return btn
     }
 
-
     /*
      *  Actions
      *
@@ -876,15 +874,12 @@ class AlertView: UIView,CAAnimationDelegate {
         self.dismissAnimated(animated: true)
     }
 
-
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         let completion : ((Void)->Void)? = anim.value(forKey: "handler") as? ((Void)->Void)
         if completion != nil {
             completion!()
         }
     }
-
-
     /*
      *
      *  UIAppearance    setters
@@ -908,7 +903,6 @@ class AlertView: UIView,CAAnimationDelegate {
         self.invaliadateLayout()
     }
 
-
     func setMessageFont(messageFont:UIFont){
         if self.messageFont == messageFont {
             return
@@ -918,7 +912,6 @@ class AlertView: UIView,CAAnimationDelegate {
         self.invaliadateLayout()
     }
 
-
     func setTitleColor(titleColor:UIColor){
         if self.titleColor == titleColor {
             return
@@ -927,7 +920,6 @@ class AlertView: UIView,CAAnimationDelegate {
         self.titleLabel.textColor = titleColor
     }
 
-
     func setMessageColor(messageColor:UIColor){
         if self.messageColor == messageColor {
             return
@@ -935,7 +927,6 @@ class AlertView: UIView,CAAnimationDelegate {
         self.messageColor = messageColor
         self.messageLabel.textColor = messageColor
     }
-
 
     func setButtonFont(buttonFont:UIFont){
         if self.buttonFont == buttonFont {
@@ -947,7 +938,6 @@ class AlertView: UIView,CAAnimationDelegate {
         }
     }
 
-
     func setCornerRadius(cornerRadius:CGFloat){
         if self.cornerRadius == cornerRadius {
             return
@@ -955,9 +945,6 @@ class AlertView: UIView,CAAnimationDelegate {
         self.cornerRadius = cornerRadius
         self.containerView.layer.cornerRadius = cornerRadius
     }
-
-
-
 
     func setShadowRadius(shadowRadius:CGFloat){
         if self.shadowRadius == shadowRadius {
@@ -967,18 +954,7 @@ class AlertView: UIView,CAAnimationDelegate {
         self.containerView.layer.shadowRadius = shadowRadius
     }
 
-
-
-
-
-
-
 }
-
-
-
-
-
 
 /*
  *
@@ -986,13 +962,9 @@ class AlertView: UIView,CAAnimationDelegate {
  *
  */
 
-
 class CustomAlertBgWindow: UIWindow {
 
-
-    var style : CustomALertView_BgStyle! = nil
-
-
+    var style : CustomALertView_BgStyle! = .Gradient
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -1002,7 +974,6 @@ class CustomAlertBgWindow: UIWindow {
         windowLevel = UIWindowLevel(UIWindowLevelCustomAlertBg)
 
     }
-
 
     override func draw(_ rect: CGRect) {
 
@@ -1017,7 +988,7 @@ class CustomAlertBgWindow: UIWindow {
             let colorSpace = CGColorSpaceCreateDeviceRGB()
             let gradient = CGGradient.init(colorSpace: colorSpace, colorComponents: colors, locations: locations, count: locationCount)
 
-            let center = CGPoint.init(x: bounds.size.width, y: bounds.size.height / 2)
+            let center = CGPoint.init(x: bounds.size.width/2, y: bounds.size.height / 2)
             let radius = min(bounds.size.width, bounds.size.height)
 
             context!.drawRadialGradient(gradient!,startCenter: center,startRadius: 0,endCenter: center,endRadius: radius,options: .drawsAfterEndLocation)
@@ -1047,6 +1018,218 @@ class CustomAlertBgWindow: UIWindow {
     }
     
 }
+/*
+ *
+ *
+ *
+ */
+
+let width = UIScreen.main.bounds.size.width
+let height = UIScreen.main.bounds.size.height
+let Tag_RightImg = 100
+
+
+class AlertLoading: UIView {
+
+    class func alertLoading(msg:String,frame:CGRect,isBelowNav:Bool)->UIView{
+
+        var y : CGFloat = 0
+        if isBelowNav {
+            y = 44
+            if iOS7 {
+                y = 64
+            }
+        }
+
+        let viewAll = UIView.init(frame: CGRect.init(x: 0, y: y, width: width, height: height - y))
+        viewAll.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.1)
+        let viewSub = UIView.init(frame: frame)
+        viewSub.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.7)
+        viewSub.layer.cornerRadius = 8.0
+        let subWidth = frame.size.width
+        let subHeight = frame.size.height
+        let lbAlert = UILabel.init(frame: CGRect.init(x: 0, y: (subHeight-20)/2.0 + 10, width: subWidth, height: 20))
+        lbAlert.text = msg
+        lbAlert.font = UIFont.systemFont(ofSize: 14)
+        lbAlert.textColor = UIColor.white
+        lbAlert.textAlignment = .center
+        lbAlert.backgroundColor = UIColor.clear
+        viewSub.addSubview(lbAlert)
+        let activity = UIActivityIndicatorView.init(activityIndicatorStyle: .white)
+        activity.frame = CGRect.init(x: (subWidth-15)/2.0, y: (subHeight-15)/2.0 - 20, width: 15, height: 15)
+        activity.startAnimating()
+        viewSub.addSubview(activity)
+        viewAll.addSubview(viewSub)
+        return viewAll
+    }
+
+
+    class func alertLoading(msg:String,img:UIImage,color:UIColor)->UIView{
+
+        let viewAll = UIView.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
+        viewAll.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.1)
+        let viewSub = UIView.init(frame: CGRect.init(x: width/4.0, y: height/4.0, width: width/2, height: 150))
+        viewSub.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.7)
+        viewSub.layer.cornerRadius = 4.0
+
+        let imgView = UIImageView.init(frame: CGRect.init(x: 52, y: 20, width: 50, height: 100))
+        imgView.image = img
+        viewSub.addSubview(imgView)
+
+        let lbALert = UILabel.init(frame: CGRect.init(x: 20, y: 120, width: width/2.0-40, height: 20))
+        lbALert.text = msg
+        lbALert.layer.cornerRadius = 4
+        lbALert.textAlignment = .center
+        lbALert.font = UIFont.systemFont(ofSize: 14)
+        lbALert.textColor = UIColor.white
+        lbALert.backgroundColor = color
+        viewSub.addSubview(viewSub)
+        viewAll.addSubview(lbALert)
+        return viewAll
+    }
+
+    class func alertLoading(msg:String,imgleft:UIImage,rightImg:UIImage)->UIView{
+
+        let viewAll = UIView.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
+        viewAll.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.1)
+        let viewSub = UIView.init(frame: CGRect.init(x: width/4, y: height/4, width: width/2, height: 150))
+        viewSub.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.7)
+        viewSub.layer.cornerRadius = 4.0
+
+        let imgLeftView = UIImageView.init(frame: CGRect.init(x: 35, y: 10, width: 50, height: 100))
+        imgLeftView.image = imgleft
+        viewSub.addSubview(imgLeftView)
+
+
+        let imgRIghtView = UIImageView.init(frame: CGRect.init(x: 85, y: 20, width: 20, height: 81))
+        imgRIghtView.image = rightImg
+        imgRIghtView.tag = Tag_RightImg
+        viewSub.addSubview(imgRIghtView)
+
+
+        let lbALert = UILabel.init(frame: CGRect.init(x: 20, y: 120, width: width/2.0-40, height: 20))
+        lbALert.text = msg
+        lbALert.layer.cornerRadius = 4
+        lbALert.font = UIFont.systemFont(ofSize: 14)
+        lbALert.textColor = UIColor.white
+        lbALert.backgroundColor = UIColor.clear
+        viewSub.addSubview(lbALert)
+        viewAll.addSubview(viewSub)
+        return viewAll
+
+    }
+
+
+}
+/*
+ *
+ *
+ *
+ */
+
+let kScreenWidth = UIScreen.main.bounds.size.width
+let kScreenHeight = UIScreen.main.bounds.size.height
+
+
+class Alert: NSObject {
+
+    class func show(str:String){
+        let alert = AlertView.init(title: "", message: str)
+        alert.addBtn(title: "确定", type: .Default) { (alert) in
+
+        }
+        alert.show()
+    }
+
+    class func show(str:String,hasSuccessIcon:Bool,parentView:UIView){
+
+        if hasSuccessIcon {
+
+            let view = UIView.init(frame: CGRect.init(x: (width-150)/2, y: (height-200)/2.0, width: 150, height: 110))
+            view.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.7)
+            view.layer.cornerRadius = 10
+            let imgView = UIImageView.init(frame: CGRect.init(x: 55, y: 25, width: 38, height: 30))
+            imgView.image = UIImage.init(named: "success_icon@2x")
+            view.addSubview(imgView)
+            
+
+
+            let lbAlert = UILabel.init(frame: CGRect.init(x: 0, y: 65, width: 150, height: 20))
+            lbAlert.text = str
+            lbAlert.textAlignment = .center
+            lbAlert.textColor = UIColor.white
+            lbAlert.font = UIFont.systemFont(ofSize: 14)
+            lbAlert.backgroundColor = UIColor.clear
+            view.addSubview(lbAlert)
+
+            parentView.addSubview(view)
+
+            UIView.animate(withDuration: 0.3, delay: 0.6, options: [.curveEaseIn], animations: {
+
+                view.backgroundColor = UIColor.clear
+                lbAlert.backgroundColor = UIColor.clear
+
+                }, completion: { (finishe) in
+
+                    if finishe {
+                        lbAlert.removeFromSuperview();
+                        imgView.removeFromSuperview();
+                        view.removeFromSuperview()
+                    }
+
+            })
+
+        }else{
+
+            let font = UIFont.systemFont(ofSize: 14)
+            var width = 150
+            let height = 150
+
+            if str.characters.count >= 10 {
+                width = 180
+            }
+
+            let view = UIView.init(frame: CGRect.init(x: (kScreenWidth-CGFloat(width))/CGFloat(2), y: (kScreenHeight-CGFloat(height)-CGFloat(90))/CGFloat(2), width: CGFloat(width), height: CGFloat(height)))
+
+            view.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.7)
+            view.layer.cornerRadius = 10
+            let lbALert = UILabel.init(frame: CGRect.init(x: 10, y: 0, width: width-20, height: height))
+            lbALert.text = str
+            lbALert.numberOfLines = 0
+            lbALert.textAlignment = .center
+            lbALert.textColor = UIColor.white
+            lbALert.font = font
+            lbALert.backgroundColor = UIColor.clear
+            view.addSubview(lbALert)
+            parentView.addSubview(lbALert)
+
+            UIView.animate(withDuration: 0.3, delay: 0.6, options: [.curveEaseIn], animations: {
+
+                lbALert.alpha = 0
+
+                }, completion: { (finished) in
+
+                    lbALert.removeFromSuperview()
+
+            })
+
+            UIView.animate(withDuration: 0.3, delay: 0.6, options: [.curveEaseIn], animations: {
+
+                view.backgroundColor = UIColor.clear
+
+                }, completion: { (finish) in
+
+                    view.removeFromSuperview()
+
+            })
+
+        }
+
+    }
+
+}
+
+
 
 
 /*

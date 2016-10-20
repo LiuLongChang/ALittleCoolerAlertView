@@ -12,7 +12,9 @@
 		94B67BBA1DB5B4080065B7C7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94B67BB81DB5B4080065B7C7 /* Main.storyboard */; };
 		94B67BBC1DB5B4080065B7C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94B67BBB1DB5B4080065B7C7 /* Assets.xcassets */; };
 		94B67BBF1DB5B4080065B7C7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94B67BBD1DB5B4080065B7C7 /* LaunchScreen.storyboard */; };
-		94B67BC91DB629B50065B7C7 /* CoolerAlertViewTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B67BC81DB629B50065B7C7 /* CoolerAlertViewTool.swift */; };
+		94DBFFB61DB890FC00C1AF97 /* AlertView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 94DBFFB51DB890FC00C1AF97 /* AlertView.bundle */; };
+		94DBFFBB1DB8959B00C1AF97 /* success_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 94DBFFBA1DB8959B00C1AF97 /* success_icon@2x.png */; };
+		94DBFFBD1DB895B500C1AF97 /* CoolerAlertViewTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DBFFBC1DB895B500C1AF97 /* CoolerAlertViewTool.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +25,9 @@
 		94B67BBB1DB5B4080065B7C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		94B67BBE1DB5B4080065B7C7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		94B67BC01DB5B4080065B7C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		94B67BC81DB629B50065B7C7 /* CoolerAlertViewTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoolerAlertViewTool.swift; sourceTree = "<group>"; };
+		94DBFFB51DB890FC00C1AF97 /* AlertView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = AlertView.bundle; sourceTree = "<group>"; };
+		94DBFFBA1DB8959B00C1AF97 /* success_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "success_icon@2x.png"; sourceTree = "<group>"; };
+		94DBFFBC1DB895B500C1AF97 /* CoolerAlertViewTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoolerAlertViewTool.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +60,8 @@
 		94B67BB31DB5B4080065B7C7 /* ALittleCoolerAlertView */ = {
 			isa = PBXGroup;
 			children = (
-				94B67BC81DB629B50065B7C7 /* CoolerAlertViewTool.swift */,
+				94DBFFB91DB8952E00C1AF97 /* CoolerAlertView */,
+				94DBFFB51DB890FC00C1AF97 /* AlertView.bundle */,
 				94B67BB41DB5B4080065B7C7 /* AppDelegate.swift */,
 				94B67BB61DB5B4080065B7C7 /* ViewController.swift */,
 				94B67BB81DB5B4080065B7C7 /* Main.storyboard */,
@@ -65,6 +70,15 @@
 				94B67BC01DB5B4080065B7C7 /* Info.plist */,
 			);
 			path = ALittleCoolerAlertView;
+			sourceTree = "<group>";
+		};
+		94DBFFB91DB8952E00C1AF97 /* CoolerAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				94DBFFBC1DB895B500C1AF97 /* CoolerAlertViewTool.swift */,
+				94DBFFBA1DB8959B00C1AF97 /* success_icon@2x.png */,
+			);
+			path = CoolerAlertView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,6 +143,8 @@
 				94B67BBF1DB5B4080065B7C7 /* LaunchScreen.storyboard in Resources */,
 				94B67BBC1DB5B4080065B7C7 /* Assets.xcassets in Resources */,
 				94B67BBA1DB5B4080065B7C7 /* Main.storyboard in Resources */,
+				94DBFFB61DB890FC00C1AF97 /* AlertView.bundle in Resources */,
+				94DBFFBB1DB8959B00C1AF97 /* success_icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +157,7 @@
 			files = (
 				94B67BB71DB5B4080065B7C7 /* ViewController.swift in Sources */,
 				94B67BB51DB5B4080065B7C7 /* AppDelegate.swift in Sources */,
-				94B67BC91DB629B50065B7C7 /* CoolerAlertViewTool.swift in Sources */,
+				94DBFFBD1DB895B500C1AF97 /* CoolerAlertViewTool.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +319,7 @@
 				94B67BC51DB5B4080065B7C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
